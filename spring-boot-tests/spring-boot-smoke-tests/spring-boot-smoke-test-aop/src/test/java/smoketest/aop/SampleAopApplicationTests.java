@@ -21,8 +21,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import org.springframework.beans.BeansException;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import smoketest.aop.service.HelloWorldService;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -33,7 +38,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  */
 @ExtendWith(OutputCaptureExtension.class)
-class SampleAopApplicationTests {
+@SpringBootTest
+class SampleAopApplicationTests implements ApplicationContextAware {
 
 	private String profiles;
 
@@ -64,4 +70,16 @@ class SampleAopApplicationTests {
 		assertThat(output).contains("Hello Gordon");
 	}
 
+	@Test
+	void testTigerAop(){
+		HelloWorldService helloWorldService = applicationContext.getBean(HelloWorldService.class);
+		String helloMessage = helloWorldService.getHelloMessage();
+		helloWorldService.sayHello("MENGTIGER");
+	}
+
+	private ApplicationContext applicationContext;
+	@Override
+	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+		this.applicationContext = applicationContext;
+	}
 }

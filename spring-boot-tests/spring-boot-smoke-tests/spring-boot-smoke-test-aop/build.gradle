@@ -6,6 +6,11 @@ plugins {
 description = "Spring Boot AOP smoke test"
 
 dependencies {
+	compileOnly 'org.projectlombok:lombok:1.18.16'
+	annotationProcessor 'org.projectlombok:lombok:1.18.16'
+
+	testCompileOnly 'org.projectlombok:lombok:1.18.16'
+	testAnnotationProcessor 'org.projectlombok:lombok:1.18.16'
 	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-aop"))
 
 	testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))

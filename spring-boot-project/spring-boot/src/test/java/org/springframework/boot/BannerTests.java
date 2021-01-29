@@ -26,12 +26,16 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.MockitoAnnotations;
 
+import org.neo4j.ogm.annotation.Properties;
 import org.springframework.boot.Banner.Mode;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.testsupport.system.CapturedOutput;
 import org.springframework.boot.testsupport.system.OutputCaptureExtension;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
+
+import javax.annotation.Resource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -51,6 +55,9 @@ import static org.mockito.Mockito.verify;
 class BannerTests {
 
 	private ConfigurableApplicationContext context;
+
+	@Resource
+	private Environment environment;
 
 	@AfterEach
 	void cleanUp() {
@@ -118,10 +125,11 @@ class BannerTests {
 		this.context = application.run();
 		assertThat(this.context.containsBean("springBootBanner")).isFalse();
 	}
-
+	//预设SpringApplication一些属性
 	private SpringApplication createSpringApplication() {
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
+		application.setLogStartupInfo(true);
 		return application;
 	}
 

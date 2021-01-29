@@ -268,9 +268,9 @@ public class SpringApplication {
 		this.resourceLoader = resourceLoader;
 		Assert.notNull(primarySources, "PrimarySources must not be null");
 		this.primarySources = new LinkedHashSet<>(Arrays.asList(primarySources));
-		this.webApplicationType = WebApplicationType.deduceFromClasspath();
-		setInitializers((Collection) getSpringFactoriesInstances(ApplicationContextInitializer.class));
-		setListeners((Collection) getSpringFactoriesInstances(ApplicationListener.class));
+		this.webApplicationType = WebApplicationType.deduceFromClasspath();//从加载的class中推断出WebApplicationType(NONE,SERVLET,REACTIVE)
+		setInitializers((Collection) getSpringFactoriesInstances(ApplicationContextInitializer.class));//META-INF/spring.factories
+		setListeners((Collection) getSpringFactoriesInstances(ApplicationListener.class));//META-INF/spring.factories
 		this.mainApplicationClass = deduceMainApplicationClass();
 	}
 
@@ -311,7 +311,7 @@ public class SpringApplication {
 			context = createApplicationContext();
 			exceptionReporters = getSpringFactoriesInstances(SpringBootExceptionReporter.class,
 					new Class[] { ConfigurableApplicationContext.class }, context);
-			prepareContext(context, environment, listeners, applicationArguments, printedBanner);
+			prepareContext(context, environment, listeners, applicationArguments, printedBanner);//准备上下文
 			refreshContext(context);
 			afterRefresh(context, applicationArguments);
 			stopWatch.stop();
@@ -362,7 +362,7 @@ public class SpringApplication {
 			return StandardEnvironment.class;
 		}
 	}
-
+	//准备上下文
 	private void prepareContext(ConfigurableApplicationContext context, ConfigurableEnvironment environment,
 			SpringApplicationRunListeners listeners, ApplicationArguments applicationArguments, Banner printedBanner) {
 		context.setEnvironment(environment);
@@ -416,6 +416,12 @@ public class SpringApplication {
 				getSpringFactoriesInstances(SpringApplicationRunListener.class, types, this, args));
 	}
 
+	/**
+	 * 从META-INF/spring.factories中加载预定义好的类集合
+	 * @param type 用于获取classLoader
+	 * @param <T>
+	 * @return
+	 */
 	private <T> Collection<T> getSpringFactoriesInstances(Class<T> type) {
 		return getSpringFactoriesInstances(type, new Class<?>[] {});
 	}
@@ -429,6 +435,16 @@ public class SpringApplication {
 		return instances;
 	}
 
+	/**
+	 * 创建实例
+	 * @param type
+	 * @param parameterTypes
+	 * @param classLoader
+	 * @param args
+	 * @param names
+	 * @param <T>
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
 	private <T> List<T> createSpringFactoriesInstances(Class<T> type, Class<?>[] parameterTypes,
 			ClassLoader classLoader, Object[] args, Set<String> names) {
@@ -436,7 +452,9 @@ public class SpringApplication {
 		for (String name : names) {
 			try {
 				Class<?> instanceClass = ClassUtils.forName(name, classLoader);
+				//断言type为instanceClass的父类
 				Assert.isAssignable(type, instanceClass);
+				//用参数获取对应的构造器
 				Constructor<?> constructor = instanceClass.getDeclaredConstructor(parameterTypes);
 				T instance = (T) BeanUtils.instantiateClass(constructor, args);
 				instances.add(instance);

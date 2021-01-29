@@ -18,9 +18,10 @@ package smoketest.aop.service;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import smoketest.aop.inter.ActionInter;
 
 @Component
-public class HelloWorldService {
+public class HelloWorldService implements ActionInter {
 
 	@Value("${name:World}")
 	private String name;
@@ -29,4 +30,17 @@ public class HelloWorldService {
 		return "Hello " + this.name;
 	}
 
+	/**
+	 * say hello to ${name}
+	 * @param name
+	 */
+	public void sayHello(String name){
+
+		System.out.println(String.format("Hello !! %s!!!",name));
+	}
+
+//	@Override
+//	public void action() {
+//		System.out.println("shadow hands");
+//	}
 }
